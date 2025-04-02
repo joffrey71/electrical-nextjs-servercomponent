@@ -39,36 +39,22 @@ import {
   IconPhotoUp,
   IconLogout
 } from '@tabler/icons-react';
-import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { Icons } from '../icons';
-import { OrgSwitcher } from '../org-switcher';
 import { useMediaQuery } from '@/hooks/use-media-query';
 
-export const company = {
-  name: 'Acme Inc',
-  logo: IconPhotoUp,
-  plan: 'Enterprise'
-};
-
-const tenants = [
-  { id: '1', name: 'Acme Inc' },
-  { id: '2', name: 'Beta Corp' },
-  { id: '3', name: 'Gamma Ltd' }
-];
-
 export default function AppSidebar() {
-  const { data: session } = useSession();
   const pathname = usePathname();
   const { isOpen } = useMediaQuery();
 
-  const handleSwitchTenant = (_tenantId: string) => {
-    // Tenant switching functionality would be implemented here
+  // Données utilisateur factices
+  const user = {
+    name: 'Utilisateur Exemple',
+    email: 'exemple@domaine.com',
+    image: '/path/to/default/avatar.png'
   };
-
-  const activeTenant = tenants[0];
 
   React.useEffect(() => {
     // Side effects based on sidebar state changes
@@ -77,15 +63,10 @@ export default function AppSidebar() {
   return (
     <Sidebar collapsible='icon'>
       <SidebarHeader>
-        <OrgSwitcher
-          tenants={tenants}
-          defaultTenant={activeTenant}
-          onTenantSwitch={handleSwitchTenant}
-        />
       </SidebarHeader>
       <SidebarContent className='overflow-x-hidden'>
         <SidebarGroup>
-          <SidebarGroupLabel>Overview</SidebarGroupLabel>
+          <SidebarGroupLabel>Espace administrateur</SidebarGroupLabel>
           <SidebarMenu>
             {navItems.map((item) => {
               const Icon = item.icon ? Icons[item.icon] : Icons.logo;
@@ -154,19 +135,19 @@ export default function AppSidebar() {
                 >
                   <Avatar className='h-8 w-8 rounded-lg'>
                     <AvatarImage
-                      src={session?.user?.image || ''}
-                      alt={session?.user?.name || ''}
+                      src={user.image || ''}
+                      alt={user.name || ''}
                     />
                     <AvatarFallback className='rounded-lg'>
-                      {session?.user?.name?.slice(0, 2)?.toUpperCase() || 'CN'}
+                      {user.name?.slice(0, 2)?.toUpperCase() || 'CN'}
                     </AvatarFallback>
                   </Avatar>
                   <div className='grid flex-1 text-left text-sm leading-tight'>
                     <span className='truncate font-semibold'>
-                      {session?.user?.name || ''}
+                      {user.name || ''}
                     </span>
                     <span className='truncate text-xs'>
-                      {session?.user?.email || ''}
+                      {user.email || ''}
                     </span>
                   </div>
                   <IconChevronsDown className='ml-auto size-4' />
@@ -182,21 +163,20 @@ export default function AppSidebar() {
                   <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
                     <Avatar className='h-8 w-8 rounded-lg'>
                       <AvatarImage
-                        src={session?.user?.image || ''}
-                        alt={session?.user?.name || ''}
+                        src={user.image || ''}
+                        alt={user.name || ''}
                       />
                       <AvatarFallback className='rounded-lg'>
-                        {session?.user?.name?.slice(0, 2)?.toUpperCase() ||
-                          'CN'}
+                        {user.name?.slice(0, 2)?.toUpperCase() || 'CN'}
                       </AvatarFallback>
                     </Avatar>
                     <div className='grid flex-1 text-left text-sm leading-tight'>
                       <span className='truncate font-semibold'>
-                        {session?.user?.name || ''}
+                        {user.name || ''}
                       </span>
                       <span className='truncate text-xs'>
                         {' '}
-                        {session?.user?.email || ''}
+                        {user.email || ''}
                       </span>
                     </div>
                   </div>
@@ -206,11 +186,11 @@ export default function AppSidebar() {
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
                     <IconCircleCheck className='mr-2 h-4 w-4' />
-                    Account
+                    Compte
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <IconCreditCard className='mr-2 h-4 w-4' />
-                    Billing
+                    Facturation
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <IconBell className='mr-2 h-4 w-4' />
@@ -218,9 +198,9 @@ export default function AppSidebar() {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut()}>
+                <DropdownMenuItem onClick={() => { /* Logique de déconnexion */ console.log('Déconnexion'); }}>
                   <IconLogout className='mr-2 h-4 w-4' />
-                  Log out
+                  Se déconnecter
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

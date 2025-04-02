@@ -1,4 +1,3 @@
-import { auth } from '@/lib/auth';
 import Providers from '@/components/layout/providers';
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata, Viewport } from 'next';
@@ -9,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { fontVariables } from '@/lib/font';
 import './globals.css';
 import './theme.css';
+import { createClient } from '@/lib/supabase/server';
 
 const META_THEME_COLORS = {
   light: '#ffffff',
@@ -29,7 +29,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
+  const supabase = await createClient();
+  const { data: session } = await supabase.auth.getSession();
   const cookieStore = await cookies();
   const activeThemeValue = cookieStore.get('active_theme')?.value;
   const isScaled = activeThemeValue?.endsWith('-scaled');
@@ -60,7 +61,6 @@ export default async function RootLayout({
         <NextTopLoader showSpinner={false} />
         <NuqsAdapter>
           <Providers
-            session={session}
             activeThemeValue={activeThemeValue as string}
           >
             <Toaster />

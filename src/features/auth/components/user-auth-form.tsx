@@ -9,27 +9,30 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { createClient } from '@/lib/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from 'next-auth/react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
-import GithubSignInButton from './github-auth-button';
 
 const formSchema = z.object({
-  email: z.string().email({ message: 'Enter a valid email address' })
+  email: z.string().email({ message: 'Entrez une adresse email valide' }),
+  password: z.string().min(1, { message: 'Le mot de passe est requis' })
 });
 
 type UserFormValue = z.infer<typeof formSchema>;
 
 export default function UserAuthForm() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
   const [loading, startTransition] = useTransition();
+  const supabase = createClient();
   const defaultValues = {
-    email: 'demo@gmail.com'
+    email: 'cousin.joffrey@gmail.com',
+    password: 'Bichon14@'
   };
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema),
@@ -37,12 +40,22 @@ export default function UserAuthForm() {
   });
 
   const onSubmit = async (data: UserFormValue) => {
-    startTransition(() => {
-      signIn('credentials', {
-        email: data.email,
-        callbackUrl: callbackUrl ?? '/dashboard'
+    const { email, password } = data;
+    startTransition(async () => {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
-      toast.success('Signed In Successfully!');
+
+      if (error) throw error
+
+      if(callbackUrl  ) {
+        router.push(callbackUrl);
+      } else {
+        router.push('/dashboard');
+      }
+      // Suppression complète de l'appel à signIn
+      toast.success('Connexion initiée (logique à implémenter) !');
     });
   };
 
@@ -62,10 +75,28 @@ export default function UserAuthForm() {
                 <FormControl>
                   <Input
                     type='email'
-                    placeholder='Enter your email...'
+                    placeholder='Entrez votre email...'
                     disabled={loading}
                     {...field}
                   />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Mot de passe</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="password" 
+                    placeholder="Entrez votre mot de passe..."
+                    disabled={loading} 
+                    {...field} 
+                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -77,21 +108,10 @@ export default function UserAuthForm() {
             className='mt-2 ml-auto w-full'
             type='submit'
           >
-            Continue With Email
+            Se connecter
           </Button>
         </form>
       </Form>
-      <div className='relative'>
-        <div className='absolute inset-0 flex items-center'>
-          <span className='w-full border-t' />
-        </div>
-        <div className='relative flex justify-center text-xs uppercase'>
-          <span className='bg-background text-muted-foreground px-2'>
-            Or continue with
-          </span>
-        </div>
-      </div>
-      <GithubSignInButton />
     </>
   );
 }

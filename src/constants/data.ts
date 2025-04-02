@@ -14,7 +14,7 @@ export type Product = {
 //Info: The following data is used for the sidebar navigation and Cmd K bar.
 export const navItems: NavItem[] = [
   {
-    title: 'Dashboard',
+    title: 'Tableau de bord',
     url: '/dashboard/overview',
     icon: 'dashboard',
     isActive: false,
@@ -28,36 +28,7 @@ export const navItems: NavItem[] = [
     shortcut: ['p', 'p'],
     isActive: false,
     items: [] // No child items
-  },
-  {
-    title: 'Account',
-    url: '#', // Placeholder as there is no direct link for the parent
-    icon: 'billing',
-    isActive: true,
-
-    items: [
-      {
-        title: 'Profile',
-        url: '/dashboard/profile',
-        icon: 'userPen',
-        shortcut: ['m', 'm']
-      },
-      {
-        title: 'Login',
-        shortcut: ['l', 'l'],
-        url: '/',
-        icon: 'login'
-      }
-    ]
-  },
-  {
-    title: 'Kanban',
-    url: '/dashboard/kanban',
-    icon: 'kanban',
-    shortcut: ['k', 'k'],
-    isActive: false,
-    items: [] // No child items
-  }
+  }  
 ];
 
 export interface SaleUser {
